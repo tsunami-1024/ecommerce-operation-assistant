@@ -1,14 +1,21 @@
 from functools import lru_cache
 from pathlib import Path
-from urllib.parse import quote
 
 from pydantic import Field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from sqlalchemy.engine import make_url
+from sqlalchemy import make_url
 
-API_DIR=Path(__file__).resolve().parents[2]
+API_DIR = Path(__file__).resolve().parents[2]
+
+
+
+def _is_placeholder_or_weak(value: str,*,min_length: int) -> bool:
+    normalized = value.strip().lower()
+    return len(value) < min_length or normalized.startswith("replace_with_") or normalized in {"agent","password"}
+
 
 class Settings(BaseSettings):
+
     app_name: str = "Ecommerce Operation Assistant API"
     app_env: str = Field(default="development", alias="APP_ENV")
     database_url: str = Field(..., alias="DATABASE_URL")
@@ -52,47 +59,55 @@ class Settings(BaseSettings):
     video_poll_interval_seconds: int = Field(default=10, alias="VIDEO_POLL_INTERVAL_SECONDS")
     video_poll_max_attempts: int = Field(default=36, alias="VIDEO_POLL_MAX_ATTEMPTS")
 
-    #读取本地.env文件覆盖当前对象的变量值，写绝对路径的形式，更灵活，读取到.env文件中的变量
-    model_config = SettingsConfigDict(env_file=API_DIR / ".env", env_file_encoding="utf-8", extra="ignore")
+    #核心方法是读取本地的.env文件覆盖当前对象中的变量值 
+    # 推荐写成绝对路径的形式 指定固定的.env文件
+    model_config = SettingsConfigDict(env_file=API_DIR / ".env",env_file_encoding="utf-8",extra="ignore")
 
+    #特殊参数处理
+    #1. 处理跨域来源 => 把一个长字符串拆分为多个来源
     @property
     def cors_origins(self) -> list[str]:
-        return [origin.strip().rstrip("/") for origin in self.api_cors_origins.split(",") if origin]
+        return [origin.strip().rstrip("/") for origin in self.api_cors_origins.split(",") if origin.strip()]
 
+    #2. 检查点数据库地址
     @property
-    def agent_checkpoint_connection_url(self) -> str:
+    def checkpoint_database_url(self) -> str:
         if self.agent_checkpoint_database_url:
             return self.agent_checkpoint_database_url
-        user = quote(self.agent_checkpoint_user, safe="")
-        password = quote(self.agent_checkpoint_password, safe="")
-        database = quote(self.agent_checkpoint_database, safe="")
-        return f"postgresql://{user}:{password}@{self.agent_checkpoint_host}:{self.agent_checkpoint_port}/{database}"
+        return f"postgresql://{self.agent_checkpoint_user}:{self.agent_checkpoint_password}@{self.agent_checkpoint_host}:{self.agent_checkpoint_port}/{self.agent_checkpoint_database}"
 
+    #后置参数校验
     @model_validator(mode="after")
     def validate_production_secrets(self) -> "Settings":
+        #1. 循环复查次数
         if self.agent_max_revisions < 0 or self.agent_max_revisions > 3:
             raise ValueError("AGENT_MAX_REVISIONS must be between 0 and 3")
+
+        #2. agent的最大token数
         if self.agent_max_total_tokens < 1000:
             raise ValueError("AGENT_MAX_TOTAL_TOKENS must be at least 1000")
-        if self.app_env.lower() in {"prod", "production"}:
+
+        #3. 生产环境下必须设置安全等级够高的密钥
+        if self.app_env.lower() in {"production", "prod"}:
+            # 保证令牌密码的安全等级
             if _is_placeholder_or_weak(self.auth_secret_key, min_length=32):
-                raise ValueError(
-                    "Production requires AUTH_SECRET_KEY to be a random secret with at least 32 characters.")
+                raise ValueError("AUTH_SECRET_KEY must be set to a strong value in production")
+            # 获取配置文件的检查点账号密码
             checkpoint_password = self.agent_checkpoint_password
-            if self.agent_checkpoint_database_url:
+            if self.checkpoint_database_url:
                 try:
-                    checkpoint_password = make_url(self.agent_checkpoint_database_url).password or ""
+                    checkpoint_password = make_url(self.checkpoint_database_url).password or ""
                 except Exception as exc:
-                    raise ValueError("AGENT_CHECKPOINT_DATABASE_URL is invalid.") from exc
+                    raise ValueError(f"Invalid AGENT_CHECKPOINT_DATABASE_URL: {exc}") from exc
             if _is_placeholder_or_weak(checkpoint_password, min_length=16):
-                raise ValueError("Production requires a strong Agent checkpoint database password.")
+                raise ValueError("AGENT_CHECKPOINT_PASSWORD must be set to a strong value in production")
         return self
 
-#单例创建Settings对象
+
+# 单例创建Settings  只有在第一次调用的时候会执行 后续的调用会直接使用第一次执行的结果
 @lru_cache
 def get_settings() -> Settings:
+    # print("hello")
     return Settings()
 
-def _is_placeholder_or_weak(value: str, *, min_length: int) -> bool:
-    normalized = value.strip().lower()
-    return len(value) < min_length or normalized.startswith("replace_with_") or normalized in {"agent", "password"}
+

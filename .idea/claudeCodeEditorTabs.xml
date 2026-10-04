@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ClaudeCodeEditorTabs">
+    <option name="activeSessionId" value="9af0972c-aa00-4a71-a539-ff7d48546226" />
+    <option name="openSessionIds">
+      <list>
+        <option value="b59cc71b-3237-4fda-a123-a4611a70481b" />
+        <option value="9a174cc5-2517-4b28-a117-b09a74b69c85" />
+        <option value="535cb740-94c0-437c-ae54-3a57ace312c3" />
+        <option value="9af0972c-aa00-4a71-a539-ff7d48546226" />
+      </list>
+    </option>
+    <option name="sessionPaths">
+      <map>
+        <entry key="535cb740-94c0-437c-ae54-3a57ace312c3" value="/sessions/6f7681ff-fcd7-4a6c-9b5b-fd31e0161dc8" />
+        <entry key="9a174cc5-2517-4b28-a117-b09a74b69c85" value="/sessions/6f7681ff-fcd7-4a6c-9b5b-fd31e0161dc8" />
+        <entry key="9af0972c-aa00-4a71-a539-ff7d48546226" value="/sessions/2dda2896-ed12-47cc-a317-7ddd7b1c733c" />
+        <entry key="b59cc71b-3237-4fda-a123-a4611a70481b" value="/sessions/641dcb2c-eff1-4fea-8757-90b530e43ba4" />
+      </map>
+    </option>
+    <option name="sessionTitles">
+      <map>
+        <entry key="535cb740-94c0-437c-ae54-3a57ace312c3" value="(.venv) PS E:\agentProject\ecommerce-operation-ass" />
+        <entry key="9a174cc5-2517-4b28-a117-b09a74b69c85" value="(.venv) PS E:\agentProject\ecommerce-operation-ass" />
+        <entry key="9af0972c-aa00-4a71-a539-ff7d48546226" value="raise ResponseValidationError( fastapi.exceptions." />
+        <entry key="b59cc71b-3237-4fda-a123-a4611a70481b" value="(.venv) PS E:\agentProject\ecommerce-operation-ass" />
+      </map>
+    </option>
+  </component>
+</project>
