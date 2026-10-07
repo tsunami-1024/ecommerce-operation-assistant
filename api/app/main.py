@@ -3,14 +3,17 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from app.api.routes import auth, health, products, promotion_links, stores, users, workspace
 from app.core.config import API_DIR, get_settings
+from app.api.routes import model_settings
 
 settings = get_settings()
 app = FastAPI(title=settings.app_name + ' — 第03篇业务系统')
 app.add_middleware(CORSMiddleware, allow_origins=settings.cors_origins,
                    allow_credentials=True, allow_methods=['*'], allow_headers=['*'])
 app.include_router(health.router)
-for route in [auth, products, promotion_links, stores, users, workspace]:
+for route in [auth, products, promotion_links, stores, users, workspace
+              ,model_settings]:
     app.include_router(route.router, prefix='/api/v1')
+
 uploads_dir = API_DIR / 'uploads'
 uploads_dir.mkdir(parents=True, exist_ok=True)
 app.mount('/uploads', StaticFiles(directory=uploads_dir), name='uploads')

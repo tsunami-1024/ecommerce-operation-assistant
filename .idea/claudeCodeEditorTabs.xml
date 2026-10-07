@@ -1,19 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ClaudeCodeEditorTabs">
-    <option name="activeSessionId" value="b59cc71b-3237-4fda-a123-a4611a70481b" />
+    <option name="activeSessionId" value="ad74b024-ebf0-43ed-81b6-36c33bfda1ad" />
     <option name="openSessionIds">
       <list>
         <option value="b59cc71b-3237-4fda-a123-a4611a70481b" />
+        <option value="ad74b024-ebf0-43ed-81b6-36c33bfda1ad" />
       </list>
     </option>
     <option name="sessionPaths">
       <map>
+        <entry key="ad74b024-ebf0-43ed-81b6-36c33bfda1ad" value="/sessions/711f5932-53c2-41b0-837c-da2623af5f4b" />
         <entry key="b59cc71b-3237-4fda-a123-a4611a70481b" value="/sessions/641dcb2c-eff1-4fea-8757-90b530e43ba4" />
       </map>
     </option>
     <option name="sessionTitles">
       <map>
+        <entry key="ad74b024-ebf0-43ed-81b6-36c33bfda1ad" value="你现在是什么模型" />
         <entry key="b59cc71b-3237-4fda-a123-a4611a70481b" value="(.venv) PS E:\agentProject\ecommerce-operation-ass" />
       </map>
     </option>
