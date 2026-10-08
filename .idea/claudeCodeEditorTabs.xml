@@ -1,23 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ClaudeCodeEditorTabs">
-    <option name="activeSessionId" value="ad74b024-ebf0-43ed-81b6-36c33bfda1ad" />
+    <option name="activeSessionId" value="e8099b46-7302-4d31-915b-111caea1104b" />
     <option name="openSessionIds">
       <list>
         <option value="b59cc71b-3237-4fda-a123-a4611a70481b" />
-        <option value="ad74b024-ebf0-43ed-81b6-36c33bfda1ad" />
+        <option value="43cf7ea8-0df5-4c9f-9a3d-152921e70a11" />
+        <option value="e8099b46-7302-4d31-915b-111caea1104b" />
       </list>
     </option>
     <option name="sessionPaths">
       <map>
-        <entry key="ad74b024-ebf0-43ed-81b6-36c33bfda1ad" value="/sessions/711f5932-53c2-41b0-837c-da2623af5f4b" />
+        <entry key="43cf7ea8-0df5-4c9f-9a3d-152921e70a11" value="/sessions/9cb7cffe-b179-4ea7-91ba-0a0c10deb631" />
         <entry key="b59cc71b-3237-4fda-a123-a4611a70481b" value="/sessions/641dcb2c-eff1-4fea-8757-90b530e43ba4" />
+        <entry key="e8099b46-7302-4d31-915b-111caea1104b" value="/sessions/9cb7cffe-b179-4ea7-91ba-0a0c10deb631" />
       </map>
     </option>
     <option name="sessionTitles">
       <map>
-        <entry key="ad74b024-ebf0-43ed-81b6-36c33bfda1ad" value="你现在是什么模型" />
+        <entry key="43cf7ea8-0df5-4c9f-9a3d-152921e70a11" value="为什么我的项目后端接口get不到我的大模型配置" />
         <entry key="b59cc71b-3237-4fda-a123-a4611a70481b" value="(.venv) PS E:\agentProject\ecommerce-operation-ass" />
+        <entry key="e8099b46-7302-4d31-915b-111caea1104b" value="为什么我的项目后端接口get不到我的大模型配置" />
       </map>
     </option>
   </component>
