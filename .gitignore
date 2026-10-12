@@ -9,3 +9,4 @@ node_modules/
 uploads/
 *.tar
 *.tar.gz
+.idea/
