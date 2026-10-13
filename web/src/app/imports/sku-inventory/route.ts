@@ -13,8 +13,7 @@ export async function POST(request: Request) {
   });
 
   if (!response.ok) {
-    const payload = (await response.json().catch(() => null)) as { detail?: string } | null;
-    return NextResponse.json({ error: payload?.detail ?? "SKU inventory import failed" }, { status: response.status });
+    return NextResponse.json({ error: "SKU inventory import failed" }, { status: response.status });
   }
 
   return NextResponse.json(await response.json());

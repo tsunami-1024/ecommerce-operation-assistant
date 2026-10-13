@@ -43,62 +43,45 @@ export function CsvImportPanel({
   fileLabel,
   itemLabel,
 }: CsvImportPanelProps) {
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [csvText, setCsvText] = useState("");
   const [result, setResult] = useState<ImportResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  /** 保存本次选择的文件；实际读取动作放到“预览/确认导入”时执行。 */
-  function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
-    const input = event.currentTarget;
-    const file = input.files?.[0];
-    // 浏览器连续选择同一个文件时，不会再次触发 change；读取完本次文件后清空控件，
-    // 这样学生可反复选择同一份 CSV 进行预览和修正。
-    input.value = "";
+  /** 处理处理文件change交互，维护必要状态并把副作用交给受控路由或后端 API。 */
+  async function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
     setResult(null);
     setError(null);
     if (!file) {
-      setSelectedFile(null);
+      setCsvText("");
       return;
     }
-    setSelectedFile(file);
+    setCsvText(await file.text());
   }
 
   /** 处理提交导入交互，维护必要状态并把副作用交给受控路由或后端 API。 */
   async function submitImport(commit: boolean) {
     // 导入中心采用“预览 -> 确认导入”两段式，commit=false 不写库，避免表格错误直接污染数据。
-    if (!selectedFile) {
+    if (!csvText.trim()) {
       setError("请先选择商品 CSV 文件。");
       return;
     }
     setLoading(true);
     setError(null);
     try {
-      // 不在选文件时异步读取，避免文件读取状态意外把“预览”按钮锁死。
-      const csvText = await selectedFile.text();
-      if (!csvText.trim()) {
-        throw new Error("所选 CSV 文件为空。");
-      }
       const response = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ csv_text: csvText, commit }),
       });
       if (!response.ok) {
-        const payload = (await response.json().catch(() => null)) as { error?: string } | null;
-        throw new Error(`${response.status}: ${payload?.error ?? "导入请求失败"}`);
+        throw new Error("导入请求失败");
       }
       // 后端返回逐行结果，前端只展示可导入/错误/已创建状态，不在浏览器端自行修正数据。
       setResult((await response.json()) as ImportResult);
-    } catch (caughtError) {
-      const message = caughtError instanceof Error ? caughtError.message : "导入请求失败";
-      if (message.startsWith("401:")) {
-        setError("前端工作台尚未登录。请先在 http://127.0.0.1:3000/login 登录，再返回本页预览。");
-      } else if (message.startsWith("403:")) {
-        setError("当前工作台账号没有导入权限，请使用具有编辑权限的账号登录。");
-      } else {
-        setError(`${itemLabel}导入失败：${message}`);
-      }
+    } catch {
+      setError(`${itemLabel}导入失败，请确认已登录且账号有编辑权限。`);
     } finally {
       setLoading(false);
     }
@@ -132,24 +115,11 @@ export function CsvImportPanel({
         </div>
       </div>
 
-      <div className="mt-5 rounded-md border border-dashed border-slate-300 bg-slate-50 px-4 py-6 text-center">
+      <label className="mt-5 block rounded-md border border-dashed border-slate-300 bg-slate-50 px-4 py-6 text-center">
         <Upload className="mx-auto h-6 w-6 text-slate-400" aria-hidden="true" />
         <span className="mt-2 block text-sm font-medium text-slate-700">{fileLabel}</span>
-        <input
-          type="file"
-          accept=".csv,text/csv"
-          onChange={handleFileChange}
-          className="mx-auto mt-3 block w-full max-w-md cursor-pointer rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700 file:mr-3 file:rounded file:border-0 file:bg-slate-950 file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-white hover:file:bg-slate-800"
-        />
-      </div>
-
-      {selectedFile ? (
-        <p className="mt-3 text-sm font-medium text-emerald-700">
-          已选择文件：{selectedFile.name}。点击“预览”时才会读取并校验文件内容。
-        </p>
-      ) : (
-        <p className="mt-3 text-sm text-slate-500">选择 CSV 文件后，需要点击“预览”才会发送导入请求。</p>
-      )}
+        <input type="file" accept=".csv,text/csv" onChange={handleFileChange} className="sr-only" />
+      </label>
 
       {error ? <p className="mt-4 text-sm font-medium text-rose-700">{error}</p> : null}
 

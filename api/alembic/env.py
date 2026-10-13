@@ -7,12 +7,12 @@ from sqlalchemy import pool
 
 from alembic import context
 
-# 项目根目录（api/ 的上一级）需要进入 sys.path，因为应用 import 使用 api.app.* 命名空间，
-# 而 alembic 通常从 api/ 目录运行，父目录默认不在 sys.path 上。
-sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+# api/ 目录（Docker 中的 /app）需要进入 sys.path，使 alembic 从任意目录运行时都能
+# import 应用包 app.*；alembic 通常以 api/ 为工作目录，此时依赖 prepend_sys_path 兜底。
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from api.app.core.config import get_settings
-from api.app.models import Base
+from app.core.config import get_settings
+from app.models import Base
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
